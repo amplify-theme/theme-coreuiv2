@@ -25,9 +25,20 @@
 	@include(backpack_view('inc.widgets'), [ 'widgets' => app('widgets')->where('section', 'before_content')->toArray() ])
 @endsection
 
+@if(backpack_user()->password_reset_required)
+    <script>
+        window.location.href = "{{ route('admin.force-password.reset', backpack_user()->id) }}";
+    </script>
+@endif
+
 @section('content')
 @endsection
 
 @section('after_content_widgets')
 	@include(backpack_view('inc.widgets'), [ 'widgets' => app('widgets')->where('section', 'after_content')->toArray() ])
 @endsection
+
+@push('after_scripts')
+	@include(backpack_view('inc.widgets'), [ 'widgets' => app('widgets')->where('section', 'after_scripts')->toArray() ])
+@endpush
+

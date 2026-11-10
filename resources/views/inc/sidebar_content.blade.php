@@ -1,1 +1,2 @@
-@include(backpack_view('inc.menu_items'))
+{{-- Amplify Default Dynamic Sidebar Menu Items --}}
+{!! app('sidebar')->render() !!}

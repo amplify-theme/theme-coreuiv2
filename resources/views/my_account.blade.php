@@ -52,7 +52,8 @@
 
         {{-- UPDATE INFO FORM --}}
         <div class="col-lg-12">
-            <form class="form" action="{{ route('backpack.account.info.store') }}" method="post">
+            <form class="form" action="{{ route('backpack.account.info.store') }}"
+                  method="post" enctype="multipart/form-data">
 
                 {!! csrf_field() !!}
 
@@ -89,14 +90,21 @@
                                 @endphp
                                 <label>{{ $label }}</label>
                                 <div class="custom-file">
-                                    <input type="file" name="{{ $field }}" value="{{ old($field) ? old($field) : $user->$field }}" class="form-control custom-file-input">
+                                    <input type="file" id="{{ $field }}" name="{{ $field }}"
+                                           accept="image/jpeg,image/png,image/gif,image/webp"
+                                           class="form-control custom-file-input">
                                     <label class="custom-file-label" for="{{ $field }}">Choose File ...</label>
+                                    <span class="invalid-feedback d-block" id="{{ $field }}-error" style="display:none;"></span>
                                     <input type="hidden" name="{{ $field }}" value="{{ old($field) ? old($field) : $user->$field }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="border rounded p-2 text-center">
-                                    <img src="{{ backpack_avatar_url(backpack_auth()->user()) }}" alt="{{ backpack_auth()->user()->name }}" height="100" width="100" style="border-radius:50%; object-fit: cover;">
+                                    <img src="{{ backpack_avatar_url(backpack_auth()->user()) }}"
+                                         alt="{{ backpack_auth()->user()->name }}"
+                                         id="image-preview"
+                                         height="100" width="100"
+                                         style="border-radius:50px; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -178,3 +186,62 @@
 
     </div>
 @endsection
+
+@pushonce('after_scripts')
+    <script>
+        function showImageError(input, message) {
+            var feedback = document.getElementById('image-error');
+            feedback.textContent = message;
+            feedback.style.display = 'block';
+            input.classList.add('is-invalid');
+            input.value = '';
+            var label = input.parentElement.querySelector('.custom-file-label');
+            if (label) {
+                label.textContent = 'Choose File ...';
+            }
+            document.getElementById('image-preview').src = '{{ backpack_avatar_url(backpack_auth()->user()) }}';
+        }
+
+        function clearImageError(input) {
+            var feedback = document.getElementById('image-error');
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+            input.classList.remove('is-invalid');
+        }
+
+        document.getElementById('image').addEventListener('change', function () {
+            var file = this.files[0];
+            var allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            var maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (!file) {
+                clearImageError(this);
+                return;
+            }
+
+            var label = this.parentElement.querySelector('.custom-file-label');
+            if (label) {
+                label.textContent = file.name;
+            }
+
+            var ext = file.name.split('.').pop().toLowerCase();
+            if (!allowed.includes(ext) || !file.type.startsWith('image/')) {
+                showImageError(this, 'Invalid file. Please upload a valid image (jpg, jpeg, png, gif, webp, bmp, svg).');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showImageError(this, 'File is too large. Maximum allowed size is 5MB.');
+                return;
+            }
+
+            clearImageError(this);
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('image-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+@endpushonce

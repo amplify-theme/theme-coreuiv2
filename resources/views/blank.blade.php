@@ -25,7 +25,7 @@
 	@include(backpack_view('inc.widgets'), [ 'widgets' => app('widgets')->where('section', 'before_content')->toArray() ])
 @endsection
 
-@if(backpack_user()->password_reset_required)
+@if(backpack_user()->password_reset_required && !in_array(request()->route()?->getName(),['admin.force-password.reset']))
     <script>
         window.location.href = "{{ route('admin.force-password.reset', backpack_user()->id) }}";
     </script>

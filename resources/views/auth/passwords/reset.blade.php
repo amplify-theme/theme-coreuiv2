@@ -5,7 +5,7 @@
         <div class="col-12 col-md-9 col-lg-6">
             <h3 class="text-center mb-4">{{ trans('backpack::base.reset_password') }}</h3>
             <div class="nav-steps-wrapper">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs nav-justified">
                       <li class="nav-item"><a class="nav-link disabled text-muted"><strong>{{ trans('backpack::base.step') }} 1.</strong> {{ trans('backpack::base.confirm_email') }}</a></li>
                       <li class="nav-item active"><a class="nav-link active"><strong>{{ trans('backpack::base.step') }} 2.</strong> {{ trans('backpack::base.choose_new_password') }}</a></li>
                 </ul>
